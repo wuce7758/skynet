@@ -19,7 +19,7 @@
       <pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>
   </appender>
-  <root level="INFO">
+  <root level="DEBUG">
     <appender-ref ref="all"/>
   </root>
 </configuration>

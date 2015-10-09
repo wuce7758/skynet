@@ -53,10 +53,7 @@ public class HTTPBeat implements heartbeat,Runnable{
     }
     @Override
     public void alarm() {
-      //  curl  --request POST --data
-      // '{"to": ["fengya@mogujie.com","fengya90@gmail.com"],"subject":"测试邮件","msg":"测试邮件内容"}'
-      // http://127.0.0.1:9000/skynet/service/sendmail
-        String[] es = emails.split(",");
+        String[] es = emails.split(";");
         EmailBean eb = new EmailBean();
         eb.setTo(es);
         eb.setSubject("服务错误告警:" + "httpbeat_" + serviceName + "_" + ip + ":" + port);
@@ -65,8 +62,8 @@ public class HTTPBeat implements heartbeat,Runnable{
         try {
             String jsonstr = mapper.writeValueAsString(eb);
             String eurl = Config.getConfig().getString("emailurl");
-            //HTTPTool.doPost(eurl,5000,5000,null,jsonstr.getBytes());
-            GlobalTool.logger.error(jsonstr);
+            HTTPTool.doPost(eurl,5000,5000,null,jsonstr.getBytes());
+            GlobalTool.logger.info(jsonstr);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -92,11 +89,15 @@ public class HTTPBeat implements heartbeat,Runnable{
     @Override
     public void run() {
         String key ="httpbeat_"+serviceName+"_"+ip+":"+port;
+        GlobalTool.logger.debug("HTTPBeat start: "+key);
         if(beat()){
+            GlobalTool.logger.debug("HTTPBeat ok: "+key);
             CacheTool.set(key,0);
         }else{
+            GlobalTool.logger.debug("HTTPBeat fail: "+key);
             if(CacheTool.inc(key) >= threshold){
                 alarm();
+                GlobalTool.logger.debug("HTTPBeat alarm: "+key);
                 CacheTool.set(key,0);
             }
         }

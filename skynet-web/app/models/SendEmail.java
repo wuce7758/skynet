@@ -14,19 +14,6 @@ import java.util.List;
  */
 public class SendEmail {
     Email email = new SimpleEmail();
-    private static SendEmail email_sender;
-
-    static {
-        Configuration config = Play.application().configuration();
-        try {
-            email_sender = new SendEmail(config.getString("custom.email.smtpHost"),
-                    config.getInt("custom.email.smtpPort"),config.getString("custom.email.userName"),
-                    config.getString("custom.email.password"),config.getString("custom.email.fromEmail"),
-                    config.getString("custom.email.fromName"));
-        } catch (EmailException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     public SendEmail(String smtpHost,int smtpPort,String userName,String password,String fromEmail,String fromName) throws EmailException {
@@ -63,16 +50,30 @@ public class SendEmail {
         email.send();
     }
 
+    private static SendEmail getDefaultEmailSender(){
+        SendEmail email_sender = null;
+        Configuration config = Play.application().configuration();
+        try {
+            email_sender = new SendEmail(config.getString("custom.email.smtpHost"),
+                    config.getInt("custom.email.smtpPort"),config.getString("custom.email.userName"),
+                    config.getString("custom.email.password"),config.getString("custom.email.fromEmail"),
+                    config.getString("custom.email.fromName"));
+        } catch (EmailException e) {
+            e.printStackTrace();
+        }
+        return email_sender;
+    }
+
     public static void SendEmail(String subject,String msg,String receiver) throws EmailException {
-        email_sender.Send(subject,msg,receiver);
+        getDefaultEmailSender().Send(subject, msg, receiver);
     }
 
     public static void SendEmail(String subject,String msg,List<String> receivers) throws EmailException {
-        email_sender.Send(subject,msg,receivers);
+        getDefaultEmailSender().Send(subject, msg, receivers);
     }
 
     public static void SendEmail(String subject,String msg,String[] receivers) throws EmailException {
-        email_sender.Send(subject,msg,receivers);
+        getDefaultEmailSender().Send(subject,msg,receivers);
     }
 
 }

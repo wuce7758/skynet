@@ -71,6 +71,8 @@
           <excludes>
             <exclude>logback.xml</exclude>
             <exclude>dev.xml</exclude>
+            <exclude>checkconfig</exclude>
+            <exclude>checkconfig/*</exclude>
           </excludes>
         </configuration>
       </plugin>
